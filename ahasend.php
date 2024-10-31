@@ -26,20 +26,31 @@ add_action('plugins_loaded', 'ahasend_load_textdomain');
  * Overrides wp_mail to use AhaSend API.
  */
 function ahasend_wp_mail($args) {
-    $to = $args['to'];
-    $subject = $args['subject'];
-    $message = $args['message'];
-    $headers = isset($args['headers']) ? $args['headers'] : '';
+    $to          = $args['to'];
+    $subject     = $args['subject'];
+    $message     = $args['message'];
+    $headers     = isset($args['headers']) ? $args['headers'] : '';
     $attachments = isset($args['attachments']) ? $args['attachments'] : [];
-
-    $api_key = get_option('ahasend_api_key');
-    $from_email = get_option('ahasend_from_email');
-    $from_name = get_option('ahasend_from_name');
+    $api_key     = get_option('ahasend_api_key');
+    $from_email  = get_option('ahasend_from_email');
+    $from_name   = get_option('ahasend_from_name');
 
     if (!$api_key || !$from_email || !$from_name) {
         return false; // Exit if settings are not set
     }
 
+	$is_html = false;
+	if (is_array($headers)) {
+		foreach ($headers as $header) {
+			if (stripos($header, 'Content-Type: text/html') !== false) {
+				$is_html = true;
+				break;
+			}
+		}
+	} elseif (stripos($headers, 'Content-Type: text/html') !== false) {
+		$is_html = true;
+	}
+	
     // Format recipients
     $recipients = is_array($to) ? array_map(function($email) {
         return ['email' => $email, 'name' => ''];
@@ -54,7 +65,7 @@ function ahasend_wp_mail($args) {
         'recipients' => $recipients,
         'content' => [
             'subject' => $subject,
-            'html_body' => $message
+            'html_body' => $is_html ? $message : nl2br(esc_html($message))
         ]
     ]);
 
@@ -121,9 +132,9 @@ function ahasend_render_settings_page() {
     }
 
     // Retrieve current option values
-    $api_key = get_option('ahasend_api_key');
+    $api_key    = get_option('ahasend_api_key');
     $from_email = get_option('ahasend_from_email');
-    $from_name = get_option('ahasend_from_name');
+    $from_name  = get_option('ahasend_from_name');
 
     ?>
     <div class="wrap">
