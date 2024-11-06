@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: AhaSend Email Sender
- * Description: Replaces WordPress default email sender with AhaSend API.
+ * Plugin Name: AhaSend SMTP Integration
+ * Description: Connect your WordPress site to AhaSend for reliable, fast transactional email delivery with easy SMTP integration and real-time tracking.
  * Version: 1.0
- * Author: AhaSend
+ * Author: ahasend
  * Text Domain: ahasend-email
  * Domain Path: /languages
  */
