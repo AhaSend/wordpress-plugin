@@ -67,39 +67,32 @@ function ahasend_wp_mail($args) {
     $payload = json_encode([
         'from' => [
             'email' => $from_email,
-            'name' => $from_name
+            'name'  => $from_name
         ],
         'recipients' => $recipients,
-        'content' => [
-            'subject' => $subject,
+        'content'    => [
+            'subject'   => $subject,
             'html_body' => $is_html ? $message : nl2br(esc_html($message))
         ]
     ]);
 
-    // Initialize cURL request
-    $curl = curl_init();
-    curl_setopt_array($curl, [
-        CURLOPT_URL => 'https://api.ahasend.com/v1/email/send',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => $payload,
-        CURLOPT_HTTPHEADER => [
-            'accept: application/json',
-            'X-Api-Key: ' . $api_key,
-            'Content-Type: application/json'
-        ],
-    ]);
+    // Make the request using WordPress HTTP API
+    $response = wp_remote_post('https://api.ahasend.com/v1/email/send', array(
+        'body'    => $payload,
+        'headers' => array(
+            'accept'       => 'application/json',
+            'X-Api-Key'    => $api_key,
+            'Content-Type' => 'application/json'
+        ),
+    ));
 
-    $response = curl_exec($curl);
-    curl_close($curl);
+    if (is_wp_error($response)) {
+        return false;
+    }
 
-    $response_data = json_decode($response, true);
-    return isset($response_data['success']) && $response_data['success'] === true;
+    $response_code = wp_remote_retrieve_response_code($response);
+
+    return $response_code === 200;
 }
 
 // Hook into wp_mail with the correct number of accepted arguments
