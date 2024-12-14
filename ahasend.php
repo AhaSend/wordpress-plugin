@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       AhaSend SMTP Integration
+ * Plugin Name:       AhaSend Email API
  * Description:       Connect your WordPress site to AhaSend for reliable, fast transactional email delivery with easy SMTP integration and real-time tracking.
  * Version:           1.0
  * Author:            ahasend
