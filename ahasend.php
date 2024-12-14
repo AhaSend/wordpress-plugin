@@ -11,7 +11,7 @@
  * Developer URI:     https://ahasend.com
  * License:           GPLv3 or later
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain:       ahasend-smtp-integration
+ * Text Domain:       ahasend-email-api
  * Domain Path:       /languages
  */
 
@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) exit;
  * Load plugin text domain for translations.
  */
 function ahasend_load_textdomain() {
-    load_plugin_textdomain('ahasend-smtp-integration', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    load_plugin_textdomain('ahasend-email-api', false, dirname(plugin_basename(__FILE__)) . '/languages');
 }
 add_action('plugins_loaded', 'ahasend_load_textdomain');
 
@@ -104,10 +104,10 @@ add_filter('wp_mail', 'ahasend_wp_mail', 10, 1);
  */
 function ahasend_add_settings_page() {
     add_menu_page(
-        __('AhaSend Settings', 'ahasend-smtp-integration'),
-        __('AhaSend Email', 'ahasend-smtp-integration'),
+        __('AhaSend Settings', 'ahasend-email-api'),
+        __('AhaSend Email', 'ahasend-email-api'),
         'manage_options',
-        'ahasend-smtp-integration',
+        'ahasend-email-api',
         'ahasend_render_settings_page',
         'dashicons-email',
         100
@@ -128,7 +128,7 @@ function ahasend_render_settings_page() {
         update_option('ahasend_from_email', sanitize_email($_POST['ahasend_from_email']));
         update_option('ahasend_from_name', sanitize_text_field($_POST['ahasend_from_name']));
 
-        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Settings saved successfully.', 'ahasend-smtp-integration') . '</p></div>';
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Settings saved successfully.', 'ahasend-email-api') . '</p></div>';
     }
 
     // Retrieve current option values
@@ -138,24 +138,24 @@ function ahasend_render_settings_page() {
 
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e('AhaSend Email Settings', 'ahasend-smtp-integration'); ?></h1>
+        <h1><?php esc_html_e('AhaSend Email Settings', 'ahasend-email-api'); ?></h1>
         <form method="post">
             <?php wp_nonce_field('ahasend_save_settings'); ?>
             <table class="form-table">
                 <tr>
-                    <th scope="row"><label for="ahasend_api_key"><?php esc_html_e('API Key', 'ahasend-smtp-integration'); ?></label></th>
+                    <th scope="row"><label for="ahasend_api_key"><?php esc_html_e('API Key', 'ahasend-email-api'); ?></label></th>
                     <td><input type="text" id="ahasend_api_key" name="ahasend_api_key" value="<?php echo esc_attr($api_key); ?>" class="regular-text" required /></td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="ahasend_from_email"><?php esc_html_e('From Email', 'ahasend-smtp-integration'); ?></label></th>
+                    <th scope="row"><label for="ahasend_from_email"><?php esc_html_e('From Email', 'ahasend-email-api'); ?></label></th>
                     <td><input type="email" id="ahasend_from_email" name="ahasend_from_email" value="<?php echo esc_attr($from_email); ?>" class="regular-text" required /></td>
                 </tr>
                 <tr>
-                    <th scope="row"><label for="ahasend_from_name"><?php esc_html_e('From Name', 'ahasend-smtp-integration'); ?></label></th>
+                    <th scope="row"><label for="ahasend_from_name"><?php esc_html_e('From Name', 'ahasend-email-api'); ?></label></th>
                     <td><input type="text" id="ahasend_from_name" name="ahasend_from_name" value="<?php echo esc_attr($from_name); ?>" class="regular-text" required /></td>
                 </tr>
             </table>
-            <?php submit_button(__('Save Settings', 'ahasend-smtp-integration'), 'primary', 'ahasend_save_settings'); ?>
+            <?php submit_button(__('Save Settings', 'ahasend-email-api'), 'primary', 'ahasend_save_settings'); ?>
         </form>
     </div>
     <?php
