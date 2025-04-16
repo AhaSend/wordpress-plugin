@@ -120,13 +120,22 @@ add_action('admin_menu', 'ahasend_add_settings_page');
  */
 function ahasend_render_settings_page() {
     // Save settings if form is submitted
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ahasend_save_settings'])) {
+	if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ahasend_save_settings'])) {
         check_admin_referer('ahasend_save_settings'); // Verify nonce for security
 
         // Save each setting
-        update_option('ahasend_api_key', sanitize_text_field($_POST['ahasend_api_key']));
-        update_option('ahasend_from_email', sanitize_email($_POST['ahasend_from_email']));
-        update_option('ahasend_from_name', sanitize_text_field($_POST['ahasend_from_name']));
+		if (isset($_POST['ahasend_api_key'])) {
+			$ahasend_api_key = sanitize_text_field(wp_unslash($_POST['ahasend_api_key']));
+			update_option('ahasend_api_key', $ahasend_api_key);
+		}
+		if (isset($_POST['ahasend_from_email'])) {
+			$ahasend_api_key = sanitize_text_field(wp_unslash($_POST['ahasend_from_email']));
+			update_option('ahasend_from_email', $ahasend_api_key);
+		}
+		if (isset($_POST['ahasend_from_name'])) {
+			$ahasend_api_key = sanitize_text_field(wp_unslash($_POST['ahasend_from_name']));
+			update_option('ahasend_from_name', $ahasend_api_key);
+		}
 
         echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Settings saved successfully.', 'ahasend-email-api') . '</p></div>';
     }
