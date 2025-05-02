@@ -20,11 +20,13 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * Load plugin text domain for translations.
+ * Uncomment it if you need for older versions, also take a look at here:
+ * https://make.wordpress.org/core/2024/10/21/i18n-improvements-6-7/
  */
-function ahasend_load_textdomain() {
-    load_plugin_textdomain('ahasend-email-api', false, dirname(plugin_basename(__FILE__)) . '/languages');
-}
-add_action('plugins_loaded', 'ahasend_load_textdomain');
+//function ahasend_load_textdomain() {
+//    load_plugin_textdomain('ahasend-email-api', false, dirname(plugin_basename(__FILE__)) . '/languages');
+//}
+//add_action('plugins_loaded', 'ahasend_load_textdomain');
 
 /**
  * Overrides wp_mail to use AhaSend API.
