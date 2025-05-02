@@ -14,6 +14,10 @@ Connect your WordPress site to AhaSend for reliable, fast transactional email de
 Most hosting providers aren\'t equipped to handle high-volume email sending or guarantee fast, reliable delivery, leading to delayed emails and poor inbox placement.
 The AhaSend WordPress plugin seamlessly connects your WordPress site with AhaSend’s [reliable email delivery platform](https://ahasend.com) via an HTTP API, improving email sending performance compared to sending with SMTP and bypassing issues such as blocked SMTP ports by hosting providers. Optimize your transactional emails with easy integration and advanced features designed for speed and enhanced inbox placement. With AhaSend, you benefit from real-time tracking, customizable data retention, and secure email handling to ensure efficient and accurate delivery. Perfect for e-commerce, membership sites, and more, AhaSend’s plugin provides robust, fast email solutions without the hassle.
 
+== External services ==
+This plugin sends email content to the AhaSend API everytime WordPress needs to send an email, and AhaSend - as an Email Service Provider - delivers the email to the recipients. 
+Please review AhaSends Terms of Use (https://ahasend.com/terms) and Privacy Policy (https://ahasend.com/privacy) before using this plugin.
+
 == Installation ==
 * Install and activate the AhaSend plugin.
 * Open your [AhaSend dashboard](https://dash.ahasend.com/accounts).
