@@ -16,7 +16,7 @@ The AhaSend WordPress plugin seamlessly connects your WordPress site with AhaSen
 
 == External services ==
 This plugin sends email content to the AhaSend API everytime WordPress needs to send an email, and AhaSend - as an Email Service Provider - delivers the email to the recipients. 
-Please review AhaSends Terms of Use (https://ahasend.com/terms) and Privacy Policy (https://ahasend.com/privacy) before using this plugin.
+Please review AhaSends [Terms of Use](https://ahasend.com/terms) and [Privacy Policy](https://ahasend.com/privacy) before using this plugin.
 
 == Installation ==
 * Install and activate the AhaSend plugin.
