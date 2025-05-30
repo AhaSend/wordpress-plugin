@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       AhaSend Email API
  * Description:       Connect your WordPress site to AhaSend for reliable, fast transactional email delivery with easy SMTP integration and real-time tracking.
- * Version:           1.1
+ * Version:           1.2.1
  * Author:            ahasend
  * Requires at least: 6.0
  * Requires PHP:      7.4
@@ -94,7 +94,7 @@ function ahasend_wp_mail($args) {
 
     $response_code = wp_remote_retrieve_response_code($response);
 
-    return $response_code === 200;
+    return $response_code === 201;
 }
 
 // Hook into wp_mail with the correct number of accepted arguments
