@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       AhaSend Email API
  * Description:       Connect your WordPress site to AhaSend for reliable, fast transactional email delivery with easy SMTP integration and real-time tracking.
- * Version:           1.2.1
+ * Version:           1.3
  * Author:            ahasend
  * Requires at least: 6.0
  * Requires PHP:      7.4
@@ -18,54 +18,134 @@
 // Prevent direct access to the plugin
 if (!defined('ABSPATH')) exit;
 
-/**
- * Load plugin text domain for translations.
- * Uncomment it if you need for older versions, also take a look at here:
- * https://make.wordpress.org/core/2024/10/21/i18n-improvements-6-7/
- */
-//function ahasend_load_textdomain() {
-//    load_plugin_textdomain('ahasend-email-api', false, dirname(plugin_basename(__FILE__)) . '/languages');
-//}
-//add_action('plugins_loaded', 'ahasend_load_textdomain');
+function ahasend_create_mu_plugin() {
+    $mu_plugin_dir = WP_CONTENT_DIR . '/mu-plugins/';
+    $mu_plugin_file = $mu_plugin_dir . 'ahasend-mu-mailer.php';
 
-/**
- * Overrides wp_mail to use AhaSend API.
- */
-/**
- * Overrides wp_mail to use AhaSend API.
- */
-function ahasend_wp_mail($args) {
-    $to          = $args['to'];
-    $subject     = $args['subject'];
-    $message     = $args['message'];
-    $headers     = isset($args['headers']) ? $args['headers'] : '';
-    $attachments = isset($args['attachments']) ? $args['attachments'] : [];
-    $api_key     = get_option('ahasend_api_key');
-    $from_email  = get_option('ahasend_from_email');
-    $from_name   = get_option('ahasend_from_name');
-
-    if (!$api_key || !$from_email || !$from_name) {
-        return false; // Exit if settings are not set
+    // Ensure the mu-plugins directory exists
+    if ( ! file_exists( $mu_plugin_dir ) ) {
+        mkdir( $mu_plugin_dir, 0755, true );
     }
 
-	$is_html = false;
-	if (is_array($headers)) {
-		foreach ($headers as $header) {
-			if (stripos($header, 'Content-Type: text/html') !== false) {
-				$is_html = true;
-				break;
-			}
-		}
-	} elseif (stripos($headers, 'Content-Type: text/html') !== false) {
-		$is_html = true;
-	}
-	
+    // The MU plugin PHP code
+    $mu_plugin_code = <<<EOD
+<?php
+/*
+Plugin Name: AhaSend MU Mailer
+Description: Overrides wp_mail to use AhaSend API.
+Author: Your Name
+*/
+
+if (!function_exists('wp_mail')) {
+    function wp_mail(\$to, \$subject, \$message, \$headers = '', \$attachments = array()) {
+        \$api_key    = get_option('ahasend_api_key');
+        \$from_email = get_option('ahasend_from_email');
+        \$from_name  = get_option('ahasend_from_name');
+
+        if (!\$api_key || !\$from_email || !\$from_name) {
+            return false;
+        }
+
+        \$is_html = false;
+        if (is_array(\$headers)) {
+            foreach (\$headers as \$header) {
+                if (stripos(\$header, 'Content-Type: text/html') !== false) {
+                    \$is_html = true;
+                    break;
+                }
+            }
+        } elseif (stripos(\$headers, 'Content-Type: text/html') !== false) {
+            \$is_html = true;
+        }
+
+        // Format recipients
+        \$recipients = is_array(\$to) ? array_map(function(\$email) {
+            return ['email' => \$email, 'name' => ''];
+        }, \$to) : [['email' => \$to, 'name' => '']];
+
+        \$payload = json_encode([
+            'from' => [
+                'email' => \$from_email,
+                'name'  => \$from_name
+            ],
+            'recipients' => \$recipients,
+            'content'    => [
+                'subject'   => \$subject,
+                'html_body' => \$is_html ? \$message : nl2br(esc_html(\$message))
+            ]
+        ]);
+
+        \$response = wp_remote_post('https://api.ahasend.com/v1/email/send', array(
+            'body'    => \$payload,
+            'headers' => array(
+                'accept'       => 'application/json',
+                'X-Api-Key'    => \$api_key,
+                'Content-Type' => 'application/json'
+            ),
+        ));
+
+        if (is_wp_error(\$response)) {
+            return false;
+        }
+
+        \$code = wp_remote_retrieve_response_code(\$response);
+        return (\$code >= 200 && \$code < 300);
+    }
+}
+EOD;
+
+    // Write the MU plugin file
+    file_put_contents( $mu_plugin_file, $mu_plugin_code );
+}
+add_action('admin_init', 'ahasend_create_mu_plugin');
+
+
+// Remove the MU plugin when this plugin is deactivated
+register_deactivation_hook(__FILE__, function() {
+    $mu_plugin_file = WP_CONTENT_DIR . '/mu-plugins/ahasend-mu-mailer.php';
+    if (file_exists($mu_plugin_file)) {
+        unlink($mu_plugin_file);
+    }
+});
+
+/**
+ * Overrides wp_mail to use AhaSend API.
+ */
+/*add_filter('wp_mail', function($args) {
+
+    $api_key    = get_option('ahasend_api_key');
+    $from_email = get_option('ahasend_from_email');
+    $from_name  = get_option('ahasend_from_name');
+
+    // If not configured, let default mailer handle it
+    if (!$api_key || !$from_email || !$from_name) {
+        return $args;
+    }
+
+    $to      = $args['to'];
+    $subject = $args['subject'];
+    $message = $args['message'];
+    $headers = $args['headers'];
+
+    // Check if HTML
+    $is_html = false;
+    if (is_array($headers)) {
+        foreach ($headers as $header) {
+            if (stripos($header, 'Content-Type: text/html') !== false) {
+                $is_html = true;
+                break;
+            }
+        }
+    } elseif (stripos($headers, 'Content-Type: text/html') !== false) {
+        $is_html = true;
+    }
+
     // Format recipients
     $recipients = is_array($to) ? array_map(function($email) {
         return ['email' => $email, 'name' => ''];
     }, $to) : [['email' => $to, 'name' => '']];
 
-    // Prepare AhaSend payload
+    // Create payload
     $payload = json_encode([
         'from' => [
             'email' => $from_email,
@@ -78,7 +158,7 @@ function ahasend_wp_mail($args) {
         ]
     ]);
 
-    // Make the request using WordPress HTTP API
+    // Send via AhaSend
     $response = wp_remote_post('https://api.ahasend.com/v1/email/send', array(
         'body'    => $payload,
         'headers' => array(
@@ -88,17 +168,18 @@ function ahasend_wp_mail($args) {
         ),
     ));
 
-    if (is_wp_error($response)) {
-        return false;
+    // If successful, prevent default mail sending
+    if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) == 200) {
+        // Abort further sending by returning false as the PHPMailer object
+        add_filter('wp_mail_phpmailer_init', function($phpmailer) {
+            // Overwrite send() so no mails go out
+            $phpmailer->preSend = function() { return false; };
+        });
     }
 
-    $response_code = wp_remote_retrieve_response_code($response);
-
-    return $response_code === 201;
-}
-
-// Hook into wp_mail with the correct number of accepted arguments
-add_filter('wp_mail', 'ahasend_wp_mail', 10, 1);
+    // Always return $args to keep compatibility
+    return $args;
+}, 1);*/
 
 
 /**

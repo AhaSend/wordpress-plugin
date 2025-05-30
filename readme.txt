@@ -4,7 +4,7 @@ Tags: email,mailersend,phpmailer,smtp,wp_mail
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.1
+Stable tag: 1.3
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,10 +35,15 @@ Please review AhaSends [Terms of Use](https://ahasend.com/terms) and [Privacy Po
 1. Setting page
 
 == Changelog ==
-= 1.0.0 =
-* Initial Release
-= 1.2.0 =
-* Fix issue with status code checking.
+
+= 1.3 =
+* Creating a plugin in the mu-plugins directory instead of using the wp_mail hook to override it.
+
 = 1.2.1 =
+* Fix issue with status code checking.
+
+= 1.2.0 =
 * Update Stable tag
 
+= 1.0.0 =
+* Initial Release
